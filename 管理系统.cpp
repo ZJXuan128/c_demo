@@ -5,7 +5,6 @@
 							//宏定义&全局变量&函数声明
 #define LEN sizeof(struct Movie)
 int n = 0;
-char ran_con[10];
 struct Movie * creat(void);
 
 struct Movie				//定义影片结构体，包含编号、年代、导演名、主演名、热度、产国、类型、画质;下一节点指针
@@ -20,6 +19,12 @@ struct Movie				//定义影片结构体，包含编号、年代、导演名、�
 	char quality[5];
 	struct Movie * next;
 };
+
+union imfor_var				//定义共用体（联合），包含整形和字符串，用于在函数间传递输入查询信息。
+{
+	int age;
+	char eve[15];
+}ran_con;
 
 							//影院管理系统-----主函数部分------
 int main(void)
@@ -36,7 +41,7 @@ struct Movie * creat(void)
 	n = 0;
 	p1 = p2 = (struct Movie *)malloc(LEN);
 	printf("开始录入影片信息：（编号，年代，导演名，主演名，类型，热度，产国，画质）\n");
-	scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type,&p1->hot,&p1->country,p1->quality);
+	scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type,&p1->hot,&p1->country,&p1->quality);
 	while (p1->num != 0)
 	{
 		n += 1;
@@ -54,7 +59,7 @@ struct Movie * creat(void)
 }
 
 
-									//查找目标节点
+									//查找目标节点或符合条件的子链
 void search(struct Movie * head)
 {
 	int option;
@@ -63,6 +68,7 @@ void search(struct Movie * head)
 	char already_choice[4][20] = {"姓名：未选择","年代：未选择","类型：未选择","产国：未选择"};
 	char tep_choice[10];
 	int i = 0;
+	int j;
 	printf("请选择查找方式：\n");
 	printf("1、编号查找\n2、范围查询\n");
 	scanf("%d", &option);
@@ -82,29 +88,33 @@ void search(struct Movie * head)
 			case 1:
 				tep_head = namesearch(tep_head);
 				strcpy(already_choice[i], "姓名：");
-				strcat(already_choice[i], ran_con);
-				i += 1;
+				strcat(already_choice[i], ran_con.eve);
+				if (i <3) i += 1;
 				break;
 			case 2:
 				tep_head = agersearch(tep_head); 
-				already_choice[i];
-				i += 1;
+				strcpy(already_choice[i], "年代：");
+				strcat(already_choice[i], ran_con.eve);
+				if (i <3) i += 1;
 				break;
 			case 3:
 				tep_head = typesearch(tep_head);
-				already_choice[i];
-				i += 1;
+				strcpy(already_choice[i], "类型：");
+				strcat(already_choice[i], ran_con.eve);
+				if (i <3) i += 1;
 				break;
 			case 4:
 				tep_head = countrysearch(tep_head);
-				already_choice[i];
-				i += 1;
+				strcpy(already_choice[i], "产国：");
+				strcat(already_choice[i], ran_con.eve);
+				if (i <3) i += 1;
 				break;
 			default:
 				printf("请输入正确的指令!\n\t再次选择\n");
 			}
-			printf("%s", already_choice);
-			printf("是否继续缩小范围？(0——继续||1——退出)");
+			for (j = 0; j < 4; j++)
+				printf("%s", already_choice[i]);
+			printf("\n是否继续缩小范围？(0——继续||1——退出)");
 			scanf("%d", &End);
 			if (End == 0)
 			{
@@ -114,7 +124,7 @@ void search(struct Movie * head)
 		}
 	}
 }
-struct Movie * numsearch(struct Movie * head)		//编号查找函数
+void numsearch(struct Movie * head)		//编号查找函数
 {
 	if (head != NULL)
 		{
@@ -138,84 +148,223 @@ struct Movie * numsearch(struct Movie * head)		//编号查找函数
 				printf("未找到该影片信息！");
 		}
 	else
-		printf("还未录入信息！");
+		printf("系统未载入信息！");
 }
 struct Movie * namesearch(struct Movie * head)				//姓名查找函数
 {
 	if (head != NULL)
 	{
-		struct Movie* p1;
-		char tep_name[10];
+		struct Movie* p1, *p2, *p3;
+		struct Movie* tep_head = NULL;
 		int i=0;
 		printf("请输入要查找的导演/主演姓名：");
-		scanf("%s", tep_name);
+		scanf("%s",ran_con.eve);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
-			if (!strcmp(p1->name,tep_name))
+			if ((!strcmp(p1->dir_nam,ran_con.eve))|| (!strcmp(p1->lead_actor_name, ran_con.eve)))
 			{
-				printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);
-				
+				if (tep_head == NULL)
+				{
+					tep_head = (struct Movie*)malloc(LEN);
+					*tep_head = *p1;
+					tep_head->next = NULL;
+					p2 = tep_head;
+				}
+				else
+				{
+					p3= (struct Movie*)malloc(LEN);
+					*p3 = *p1;
+					p3->next = NULL;
+					p2->next = p3;
+					p2 = p3;
+				}
 			}
 			else
 				i++;
 		}
 		if (i == n)
-			printf("未找到该影片信息！");
+			printf("未找到该与该人物有关的影片信息！");
+		else
+			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
 	}
 	else
-		printf("还未录入信息！");
+		printf("系统未载入信息！");
 }
-struct Movie * agersearch(struct Movie * head)				//宿舍查找函数
+struct Movie * agersearch(struct Movie * head)				//年代查找函数（缺少：将.age转为.eve)
 {
 	if (head != NULL)
 	{
-		struct Movie* p1;
-		char tempaddr[15];
-		int i=0,t=0;
-		printf("请输入要查找的学生姓名：");
-		scanf("%s", tempaddr);
+		struct Movie * p1,* p2,* p3;
+		struct Movie * tep_head=NULL;
+		int i=0;
+		printf("请输入要查找的年代：");
+		scanf("%d",ran_con.age);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
-			if (!strcmp(p1->name, tempaddr))
+			if (p1->age==ran_con.age)
 			{
-				printf("%ld,%d,%c,%s,%s\n", p1->num, p1->age, p1->sex, p1->name, p1->addr);
-				t += 1;
+				if (tep_head == NULL)
+				{
+					tep_head = (struct Movie*)malloc(LEN);
+					*tep_head = *p1;
+					tep_head->next = NULL;
+					p2 = tep_head;
+				}
+				else
+				{
+					p3 = (struct Movie*)malloc(LEN);
+					*p3 = *p1;
+					p3->next = NULL;
+					p2->next = p3;
+					p2 = p3;
+				}
 			}
 			else
 				i++;
-			if (t == 6)
-				break;
 		}
 		if (i == n)
 			printf("未找到该年代影片信息！");
+		else
+		{
+			;//循环输出子链表
+		}
 	}
 	else
-		printf("还未录入该年代信息！");
+		printf("系统未载入信息！");
 }
 struct Movie * typesearch(struct Movie * head)
 {
-
+	if (head != NULL)
+	{
+		struct Movie* p1, *p2, *p3;
+		struct Movie* tep_head = NULL;
+		int i = 0;
+		printf("请输入要查找的类型：");
+		scanf("%s", ran_con.eve);
+		getchar();
+		for (p1 = head; p1 != NULL; p1 = p1->next)
+		{
+			if ((!strcmp(p1->type, ran_con.eve)))
+			{
+				if (tep_head == NULL)
+				{
+					tep_head = (struct Movie*)malloc(LEN);
+					*tep_head = *p1;
+					tep_head->next = NULL;
+					p2 = tep_head;
+				}
+				else
+				{
+					p3 = (struct Movie*)malloc(LEN);
+					*p3 = *p1;
+					p3->next = NULL;
+					p2->next = p3;
+					p2 = p3;
+				}
+			}
+			else
+				i++;
+		}
+		if (i == n)
+			printf("未找到该类型的影片信息！");
+		else
+			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
+	}
+	else
+		printf("系统未载入信息！");
 }
 struct Movie * countrysearch(struct Movie * head)
 {
-
+	if (head != NULL)
+	{
+		struct Movie* p1, *p2, *p3;
+		struct Movie* tep_head = NULL;
+		int i = 0;
+		printf("请输入要查找的产国：");
+		scanf("%s", ran_con.eve);
+		getchar();
+		for (p1 = head; p1 != NULL; p1 = p1->next)
+		{
+			if ((!strcmp(p1->country, ran_con.eve)))
+			{
+				if (tep_head == NULL)
+				{
+					tep_head = (struct Movie*)malloc(LEN);
+					*tep_head = *p1;
+					tep_head->next = NULL;
+					p2 = tep_head;
+				}
+				else
+				{
+					p3 = (struct Movie*)malloc(LEN);
+					*p3 = *p1;
+					p3->next = NULL;
+					p2->next = p3;
+					p2 = p3;
+				}
+			}
+			else
+				i++;
+		}
+		if (i == n)
+			printf("未找到该国家的影片信息！");
+		else
+			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
+	}
+	else
+		printf("系统未载入信息！");
 }
 
+									//链表输出
+void output(struct Movie * head)
+{
 
-
+}			
 									//链表排序
-
-									
 void order(struct Movie * head)
 {
 
 }
-
+									//节点删除
+void del(struct Movie * head)						
+{
+	long a;
+	struct Movie * p1;
+	struct Movie * p2 = head;
+	if (head == NULL)
+		printf("系统未载入信息！");
+	else
+	{
+		printf("请输入要删除的编号：\n");
+		scanf("%ld", &a);
+		getchar();
+		if (head->num == a)
+		{
+			p1 = head;
+			head = head->next;
+			free(p1);
+			printf("已删除！\n"), n -= 1;
+		}
+		else
+		{
+			for (p2; p2->next; p2 = p2->next)
+			{
+				if (p2->next->num == a)
+				{
+					p1 = p2->next;
+					p2->next = p1->next;
+					free(p1);
+				}
+				printf("已删除！\n"), n -= 1;
+			}
+		}
+	}
+}
 
 									//登陆模块
-int i = 0;//当前账号标记
+int i = 0;//当前账号标记,i已被使用，需更换。
 int flag1 = 0;//登录成功标记
 struct user
 {
