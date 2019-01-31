@@ -5,9 +5,10 @@
 							//宏定义&全局变量&函数声明
 #define LEN sizeof(struct Movie)
 int n = 0;
+char ran_con[10];
 struct Movie * creat(void);
 
-struct Movie				//定义结构体，包含编号、年代、导演名、主演名、热度、产国、类型、画质;下一节点指针
+struct Movie				//定义影片结构体，包含编号、年代、导演名、主演名、热度、产国、类型、画质;下一节点指针
 {
 	long num;
 	int age;
@@ -19,13 +20,15 @@ struct Movie				//定义结构体，包含编号、年代、导演名、主演�
 	char quality[5];
 	struct Movie * next;
 };
+
 							//影院管理系统-----主函数部分------
 int main(void)
 {
 
 }
+
 							//------调用函数部分----
-									//信息录入链表
+								//信息录入链表
 struct Movie * creat(void)
 {
 	struct Movie * p1, * p2;
@@ -43,7 +46,7 @@ struct Movie * creat(void)
 			p2->next = p1;
 		p2 = p1;
 		p1 = (struct Movie *)malloc(LEN);
-		scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type, &p1->hot, &p1->country, p1->quality);
+		scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type, &p1->hot, &p1->country, &p1->quality);
 		getchar();
 	}
 	p2->num = NULL;
@@ -55,19 +58,63 @@ struct Movie * creat(void)
 void search(struct Movie * head)
 {
 	int option;
+	struct Movie * tep_head;
+	int End = 0;
+	char already_choice[4][20] = {"姓名：未选择","年代：未选择","类型：未选择","产国：未选择"};
+	char tep_choice[10];
+	int i = 0;
 	printf("请选择查找方式：\n");
-	printf("1、编号查找\n2、导演名/主演名查找\n3、年代查找\n4、类型查找\n5、热度排行\n6、产国查询\n");
+	printf("1、编号查找\n2、范围查询\n");
 	scanf("%d", &option);
 	getchar();
-	switch (option)
+	if (option == 1)
+		numsearch(head);
+	else
 	{
-	case 1:numsearch(head); break;
-	case 2:namesearch(head); break;
-	case 3:addrsearch(head); break;
-	default:printf("请输入正确的指令!\n");
+		tep_head = head;
+		printf("选择范围：\n1、导演/主演名查找\n2、年代查找\n3、类型查找\n4、产国查找");
+		scanf("%d", &option);
+		getchar();
+		while (End != 1)
+		{
+			switch (option)
+			{
+			case 1:
+				tep_head = namesearch(tep_head);
+				strcpy(already_choice[i], "姓名：");
+				strcat(already_choice[i], ran_con);
+				i += 1;
+				break;
+			case 2:
+				tep_head = agersearch(tep_head); 
+				already_choice[i];
+				i += 1;
+				break;
+			case 3:
+				tep_head = typesearch(tep_head);
+				already_choice[i];
+				i += 1;
+				break;
+			case 4:
+				tep_head = countrysearch(tep_head);
+				already_choice[i];
+				i += 1;
+				break;
+			default:
+				printf("请输入正确的指令!\n\t再次选择\n");
+			}
+			printf("%s", already_choice);
+			printf("是否继续缩小范围？(0——继续||1——退出)");
+			scanf("%d", &End);
+			if (End == 0)
+			{
+				printf("选择范围：\n1、导演/主演名查找\n2、年代查找\n3、产国查找");
+				scanf("%d", &option);
+			}
+		}
 	}
 }
-void numsearch(struct Movie * head)		//学号查找函数
+struct Movie * numsearch(struct Movie * head)		//编号查找函数
 {
 	if (head != NULL)
 		{
@@ -81,7 +128,7 @@ void numsearch(struct Movie * head)		//学号查找函数
 			{
 				if (p1->num == a)
 				{
-					printf("%ld,%d,%c,%s,%s\n", p1->num, p1->age, p1->sex, p1->name, p1->addr);
+					printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);
 					break;
 				}
 				else
@@ -93,33 +140,33 @@ void numsearch(struct Movie * head)		//学号查找函数
 	else
 		printf("还未录入信息！");
 }
-void namesearch(struct Movie * head)				//姓名查找函数
+struct Movie * namesearch(struct Movie * head)				//姓名查找函数
 {
 	if (head != NULL)
 	{
 		struct Movie* p1;
-		char tempname[10];
+		char tep_name[10];
 		int i=0;
 		printf("请输入要查找的导演/主演姓名：");
-		scanf("%s", tempname);
+		scanf("%s", tep_name);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
-			if (!strcmp(p1->name,tempname))
+			if (!strcmp(p1->name,tep_name))
 			{
-				printf("%ld,%d,%c,%s,%s\n", p1->num, p1->age, p1->sex, p1->name, p1->addr);
-				break;
+				printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);
+				
 			}
 			else
 				i++;
 		}
 		if (i == n)
-			printf("未找到该学生信息！");
+			printf("未找到该影片信息！");
 	}
 	else
 		printf("还未录入信息！");
 }
-void addrsearch(struct Movie * head)				//宿舍查找函数
+struct Movie * agersearch(struct Movie * head)				//宿舍查找函数
 {
 	if (head != NULL)
 	{
@@ -142,11 +189,20 @@ void addrsearch(struct Movie * head)				//宿舍查找函数
 				break;
 		}
 		if (i == n)
-			printf("未找到该信息！");
+			printf("未找到该年代影片信息！");
 	}
 	else
-		printf("还未录入信息！");
+		printf("还未录入该年代信息！");
 }
+struct Movie * typesearch(struct Movie * head)
+{
+
+}
+struct Movie * countrysearch(struct Movie * head)
+{
+
+}
+
 
 
 									//链表排序
