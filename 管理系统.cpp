@@ -4,7 +4,7 @@
 #include<string.h>
 							//宏定义&全局变量&函数声明
 #define LEN sizeof(struct Movie)
-int n = 0;
+int n = 0, m;
 struct Movie * creat(void);
 
 struct Movie				//定义影片结构体，包含编号、年代、导演名、主演名、热度、产国、类型、画质;下一节点指针
@@ -29,7 +29,7 @@ union imfor_var				//定义共用体（联合），包含整形和字符串，�
 							//影院管理系统-----主函数部分------
 int main(void)
 {
-
+	
 }
 
 							//------调用函数部分----
@@ -41,7 +41,7 @@ struct Movie * creat(void)
 	n = 0;
 	p1 = p2 = (struct Movie *)malloc(LEN);
 	printf("开始录入影片信息：（编号，年代，导演名，主演名，类型，热度，产国，画质）\n");
-	scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type,&p1->hot,&p1->country,&p1->quality);
+	scanf("%ld,%d,%s,%s,%s,%d,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type,&p1->hot,&p1->country,&p1->quality);
 	while (p1->num != 0)
 	{
 		n += 1;
@@ -51,7 +51,7 @@ struct Movie * creat(void)
 			p2->next = p1;
 		p2 = p1;
 		p1 = (struct Movie *)malloc(LEN);
-		scanf("%ld,%d,%s,%s,%d,%s,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type, &p1->hot, &p1->country, &p1->quality);
+		scanf("%ld,%d,%s,%s,%s,%d,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type, &p1->hot, &p1->country, &p1->quality);
 		getchar();
 	}
 	p2->num = NULL;
@@ -138,7 +138,7 @@ void numsearch(struct Movie * head)		//编号查找函数
 			{
 				if (p1->num == a)
 				{
-					printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);
+					printf("%ld,%d,%s,%s,%s,%d,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);
 					break;
 				}
 				else
@@ -157,8 +157,9 @@ struct Movie * namesearch(struct Movie * head)				//姓名查找函数
 		struct Movie* p1, *p2, *p3;
 		struct Movie* tep_head = NULL;
 		int i=0;
+		m = 0;
 		printf("请输入要查找的导演/主演姓名：");
-		scanf("%s",ran_con.eve);
+		scanf("%s",&ran_con.eve);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
@@ -179,6 +180,7 @@ struct Movie * namesearch(struct Movie * head)				//姓名查找函数
 					p2->next = p3;
 					p2 = p3;
 				}
+				m += 1;
 			}
 			else
 				i++;
@@ -186,7 +188,10 @@ struct Movie * namesearch(struct Movie * head)				//姓名查找函数
 		if (i == n)
 			printf("未找到该与该人物有关的影片信息！");
 		else
-			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
+		{
+			output(tep_head);
+			return tep_head;
+		}
 	}
 	else
 		printf("系统未载入信息！");
@@ -198,8 +203,9 @@ struct Movie * agersearch(struct Movie * head)				//年代查找函数（缺少�
 		struct Movie * p1,* p2,* p3;
 		struct Movie * tep_head=NULL;
 		int i=0;
+		m = 0;
 		printf("请输入要查找的年代：");
-		scanf("%d",ran_con.age);
+		scanf("%d",&ran_con.age);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
@@ -220,6 +226,7 @@ struct Movie * agersearch(struct Movie * head)				//年代查找函数（缺少�
 					p2->next = p3;
 					p2 = p3;
 				}
+				m += 1;
 			}
 			else
 				i++;
@@ -228,7 +235,8 @@ struct Movie * agersearch(struct Movie * head)				//年代查找函数（缺少�
 			printf("未找到该年代影片信息！");
 		else
 		{
-			;//循环输出子链表
+			output(tep_head);
+			return tep_head;
 		}
 	}
 	else
@@ -241,8 +249,9 @@ struct Movie * typesearch(struct Movie * head)
 		struct Movie* p1, *p2, *p3;
 		struct Movie* tep_head = NULL;
 		int i = 0;
+		m = 0;
 		printf("请输入要查找的类型：");
-		scanf("%s", ran_con.eve);
+		scanf("%s", &ran_con.eve);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
@@ -263,6 +272,7 @@ struct Movie * typesearch(struct Movie * head)
 					p2->next = p3;
 					p2 = p3;
 				}
+				m += 1;
 			}
 			else
 				i++;
@@ -270,7 +280,10 @@ struct Movie * typesearch(struct Movie * head)
 		if (i == n)
 			printf("未找到该类型的影片信息！");
 		else
-			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
+		{
+			output(tep_head);
+			return tep_head;
+		}
 	}
 	else
 		printf("系统未载入信息！");
@@ -282,8 +295,9 @@ struct Movie * countrysearch(struct Movie * head)
 		struct Movie* p1, *p2, *p3;
 		struct Movie* tep_head = NULL;
 		int i = 0;
+		m = 0;
 		printf("请输入要查找的产国：");
-		scanf("%s", ran_con.eve);
+		scanf("%s", &ran_con.eve);
 		getchar();
 		for (p1 = head; p1 != NULL; p1 = p1->next)
 		{
@@ -304,6 +318,7 @@ struct Movie * countrysearch(struct Movie * head)
 					p2->next = p3;
 					p2 = p3;
 				}
+				m += 1;
 			}
 			else
 				i++;
@@ -311,7 +326,10 @@ struct Movie * countrysearch(struct Movie * head)
 		if (i == n)
 			printf("未找到该国家的影片信息！");
 		else
-			printf("%ld,%d,%s,%s,%d,%s,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->quality);//根据tep_head输出子链表，这里象征代替，
+		{
+			output(tep_head);
+			return tep_head;
+		}
 	}
 	else
 		printf("系统未载入信息！");
@@ -320,7 +338,19 @@ struct Movie * countrysearch(struct Movie * head)
 									//链表输出
 void output(struct Movie * head)
 {
-
+	struct Movie * p;
+	printf("共有%d个结果。\n", m);
+	p = head;
+	if (head != NULL)
+	{
+		do
+		{
+			printf("%ld,%d,%s,%s,%s,%d,%s,%s", p->num, p->age, p->dir_nam, p->lead_actor_name, p->type, p->hot, p->country, p->quality);
+			p = p->next;
+		} while (p != NULL);
+	}
+	else
+		printf("错误！！！");
 }			
 									//链表排序
 void order(struct Movie * head)
@@ -362,8 +392,30 @@ void del(struct Movie * head)
 		}
 	}
 }
+									//节点修改(应先应用查找函数推荐编号或片名）
+void change(struct Movie * head)
+{
+
+}
+									//节点插入（单纯增加可选择尾插）
+
+									//进入管理系统（数据从文件进入链表)应当传入登陆成功的参数
+void entersys(void)
+{
+
+}
+									//退出管理系统（数据从链表录入 文件）
+void exitsys(void)
+{
+
+}
 
 									//登陆模块
+struct user
+{
+	int acc[10];
+	char pas[10];
+};
 int i = 0;//当前账号标记,i已被使用，需更换。
 int flag1 = 0;//登录成功标记
 struct user
@@ -371,14 +423,14 @@ struct user
 	char user_Name[6];
 	char user_Pass[7];
 }stu[3] = { {"A0001","111111"},{"A0002","222222"},{"admin","333333"} };//初始化用户名和对应密码,后期改为文件储存
-void login()
+void xiugai_Passwd(void)//修改密码
 {
-	void print_Passwd(void);
-	void xiugai_Passwd(void);
-	while (1)
-	{
-		print_Passwd();
-	}
+	char p[10];//新密码
+	printf("请输入新密码:\n");
+	scanf("%s", p);
+	strcpy(stu[i].user_Pass, p);
+	printf("修改密码成功:\n");
+	printf("请重新登录:\n");
 }
 void print_Passwd(void)
 {
@@ -426,7 +478,7 @@ void print_Passwd(void)
 	{
 		if (strcmp("admin", p) == 0)
 		{
-			printf("注:你是VIP超级用户!\n");
+			printf("注:你是管理员!\n");
 		}
 		else
 			printf("注:你是普通用户\n");
@@ -438,12 +490,44 @@ void print_Passwd(void)
 		}
 	}
 }
-void xiugai_Passwd(void)//修改密码
+void login()
 {
-	char p[10];//新密码
-	printf("请输入新密码:\n");
-	scanf("%s", p);
-	strcpy(stu[i].user_Pass, p);
-	printf("修改密码成功:\n");
-	printf("请重新登录:\n");
+	void print_Passwd(void);
+	void xiugai_Passwd(void);
+	while (1)
+	{
+		print_Passwd();
+	}
+}
+
+									//文件
+ int user_infor_read_cmp(struct user tep)
+{
+	//读文件。
+
+	 FILE * fp;
+	 char a[11];
+	 char b[20];
+	 char s = 'o';
+	 int i = 0, n, j;
+	 fopen_s(&fp, "d:\\user.txt", "r");
+	 fgets(a, 11, fp);
+	 n = atoi(a);
+	 getc(fp);
+	 while (1)
+	 {
+		 s = fgetc(fp);
+		 if (s == '\0')
+		 {
+			 b[i] = s;
+			 break;
+		 }
+		 else
+		 {
+			 b[i] = s;
+			 i += 1;
+		 }
+	 }
+	 fclose(fp);
+	 printf("%d\n%s", n, b);
 }
