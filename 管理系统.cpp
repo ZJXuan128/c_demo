@@ -6,6 +6,25 @@
 #define LEN sizeof(struct Movie)
 int n = 0, m,nm=5,ti=4;
 struct Movie * creat(void);
+void search(struct Movie * head);
+struct Movie * numsearch(struct Movie * head);
+struct Movie * filmsearch(struct Movie * head);
+struct Movie * namesearch(struct Movie * head);
+struct Movie * agersearch(struct Movie * head);
+struct Movie * typesearch(struct Movie * head);
+struct Movie * countrysearch(struct Movie * head);
+void hot_order(struct Movie * head);
+void output(struct Movie * head);
+void order(struct Movie * head);
+void del(struct Movie * head);
+void change(struct Movie * head);
+void add(struct Movie * head);
+struct Movie * entersys(void);
+void exitsys(struct Movie * head);
+int login(void);
+void regis(void);
+int user_infor_read_cmp(struct user tep);
+void user_infor_write(struct user tep);
 
 struct Movie				//定义影片结构体，包含编号、年代、导演名、主演名、热度、产国、类型、片名;下一节点指针
 {
@@ -16,7 +35,7 @@ struct Movie				//定义影片结构体，包含编号、年代、导演名、�
 	int hot;
 	char country[5];
 	char type[5];
-	char film_name[5];
+	char film_name[10];
 	struct Movie * next;
 };
 union imfor_var				//定义共用体（联合），包含整形和字符串，用于在函数间传递输入查询信息。
@@ -57,48 +76,60 @@ int main(void)
 	}
 	if (us == 1)//普通用户
 	{
-		printf("登陆成功！用户类型：普通用户\n请选择：1、进入管理系统\n2、修改密码\n");
+		printf("登陆成功！用户类型：普通用户\n请选择：1、进入管理系统\n");
 		scanf("%d", &op);
 		getchar();
 		if (op == 1)
 		{
 			head=entersys();
-			printf("信息载入完毕！\n请选择：1、进入查找模式\n2、退出系统\n");
-			scanf("%d", &op);
-			getchar();
-			if (op == 1)
-				search(head);
-			else
-				exitsys(head);
+			printf("信息载入完毕！\n");
+			while (1)
+			{
+				printf("请选择：1、进入查找模式\n2、热度排行榜\n3、退出系统\n");
+				scanf("%d", &op);
+				getchar();
+				switch (op)
+				{
+				case 1:search(head); break;
+				case 2:; break;
+				case 3:exitsys(head); exit(0); break;
+				default:printf("输入正确指令！");
+				}
+			}
 		}
 	}
 	if (us == 0)//管理员
 	{
 		head = entersys();
-		printf("登陆成功！用户类型：管理员\n请选择：1、查找\n2、删除\n3、修改\n4、插入\n5、退出系统\n");
-		scanf("%d", &op);
-		getchar();
-		switch (op)
+		printf("登陆成功！用户类型：管理员\n");
+		while (1)
 		{
-			case 1:; break;
-			case 2:; break;
-			case 3:; break;
-			case 4:; break;
-			case 5:; break;
-			default:printf("");
+			printf("请选择：1、查找\n2、删除\n3、修改\n4、插入\n5、重新录入系统信息\n6、退出系统\n");
+			scanf("%d", &op);
+			getchar();
+			switch (op)
+			{
+			case 1:search(head); break;
+			case 2:del(head); break;
+			case 3:change(head); break;
+			case 4:add(head); break;
+			case 5:head = creat(); break;
+			case 6:exitsys(head); exit(0); break;
+			default:printf("请输入正确指令！");
+			}
 		}
 	}
 }
 
-							//------调用函数部分----
-								//信息录入链表
+										//------调用函数部分----
+										//信息录入链表
 struct Movie * creat(void)
 {
 	struct Movie * p1, * p2;
 	struct Movie * head=NULL;
 	n = 0;
 	p1 = p2 = (struct Movie *)malloc(LEN);
-	printf("开始录入影片信息：（编号，年代，导演名，主演名，类型，热度，产国，片名）\n");
+	printf("开始录入影片信息：（编号，年代，导演名，主演名，类型，热度，产国，片名,遇'0'则止）\n");
 	scanf("%ld,%d,%s,%s,%s,%d,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type,&p1->hot,&p1->country,&p1->film_name);
 	while (p1->num != 0)
 	{
@@ -184,7 +215,7 @@ void search(struct Movie * head)
 		}
 	}
 }
-void numsearch(struct Movie * head)		//编号查找函数
+struct Movie * numsearch(struct Movie * head)		//编号查找函数
 {
 	if (head != NULL)
 		{
@@ -200,7 +231,7 @@ void numsearch(struct Movie * head)		//编号查找函数
 				{
 					p1->hot += 1;
 					printf("%ld,%d,%s,%s,%s,%d,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->film_name);
-					break;
+					return p1;
 				}
 				else
 					i++;
@@ -211,7 +242,7 @@ void numsearch(struct Movie * head)		//编号查找函数
 	else
 		printf("系统未载入信息！");
 }
-void filmsearch(struct Movie * head)
+struct Movie * filmsearch(struct Movie * head)
 {
 	if (head != NULL)
 	{
@@ -227,7 +258,7 @@ void filmsearch(struct Movie * head)
 			{
 				p1->hot += 1;
 				printf("%ld,%d,%s,%s,%s,%d,%s,%s", p1->num, p1->age, p1->dir_nam, p1->lead_actor_name, p1->type, p1->hot, p1->country, p1->film_name);
-				break;
+				return p1;
 			}
 			else
 				i++;
@@ -425,6 +456,12 @@ struct Movie * countrysearch(struct Movie * head)
 	else
 		printf("系统未载入信息！");
 }
+void hot_order(struct Movie * head)
+{
+	printf("热度排行榜");
+	order(head);
+	output(head);
+}
 
 									//链表输出
 void output(struct Movie * head)
@@ -443,10 +480,30 @@ void output(struct Movie * head)
 	else
 		printf("错误！！！");
 }			
-									//链表排序
+									//链表排序(冒泡)
 void order(struct Movie * head)
 {
-
+	if ((head->next == NULL) || (head->next->next == NULL))
+		return;
+	struct  Movie *thead,* pre, *cur, *tnext, *end, *tep;
+	thead = head;
+	end = NULL;
+	while (thead->next != end)
+	{
+		for (pre = thead, cur = pre->next, tnext = cur->next; tnext != end; pre->next, cur = cur->next, tnext = tnext->next)
+		{
+			if (cur->hot < tnext->hot)
+			{
+				cur->next = tnext->next;
+				pre->next = tnext;
+				tnext->next = cur;
+				tep = tnext;
+				tnext = cur;
+				cur = tep;
+			}
+		}
+		end = cur;
+	}
 }
 									//节点删除
 void del(struct Movie * head)						
@@ -486,9 +543,87 @@ void del(struct Movie * head)
 									//节点修改(应先应用查找函数推荐编号或片名）
 void change(struct Movie * head)
 {
-
+	int op;
+	struct Movie * p1;
+	char t_dir[10],t_lea[10],t_cour[5],t_type[5],t_nam[10];
+	int t_num, t_age;
+	while (1)
+	{
+		printf("选择修改方式：1、编号寻找后修改\n2、片名查找后修改");
+		scanf("%d", &op);
+		if (op == 1)
+		{
+			p1 = numsearch(head);
+			break;
+		}
+		else if (op == 2)
+		{
+			p1 = filmsearch(head);
+			break;
+		}
+		else
+			printf("指令输入错误，返回。");
+	}
+	while (1)
+	{
+		printf("选择当前影片需要修改的值：1、编号\n2、年代\n3、导演名\n4、主演名\n5、产国\n6、类型\n7、片名\n8、退出修改\n");
+		scanf("%d", &op);
+		getchar();
+		printf("输入目标值");
+		switch (op)
+		{
+		case 1:
+			scanf("%ld",&t_num);
+			p1->num = t_num;
+			break;
+		case 2:
+			scanf("%d",&t_age);
+			p1->age = t_age;
+			break;
+		case 3:
+			scanf("%s", t_dir);
+			strcpy(p1->dir_nam,t_dir); 
+			break;
+		case 4:
+			scanf("%s",t_lea);
+			strcpy(p1->lead_actor_name, t_lea);
+			break;
+		case 5:
+			scanf("%s",t_cour);
+			strcpy(p1->country, t_cour);
+			break;
+		case 6:
+			scanf("%s",t_type);
+			strcpy(p1->type, t_type);
+			break;
+		case 7:
+			scanf("%s",t_nam);
+			strcpy(p1->film_name, t_nam);
+			break;
+		case 8:
+			break;
+		default:printf("输入正确的指令！");
+		}
+		getchar();
+		if (op == 8)
+			break;
+	}
 }
-									//节点插入（单纯增加可选择尾插）
+									//节点插入（尾插）
+void add(struct Movie * head)
+{
+	struct Movie * p1 = head;
+	struct Movie * p2 = (struct Movie *)malloc(LEN);
+	printf("输入要添加的影片信息：（编号，年代，导演名，主演名，类型，热度，产国，片名）");
+	scanf("%ld,%d,%s,%s,%s,%d,%s,%s", &p1->num, &p1->age, &p1->dir_nam, &p1->lead_actor_name, &p1->type, &p1->hot, &p1->country, &p1->film_name);
+	getchar();
+	p2->next = NULL;
+	while (p1->next != NULL)
+		p1 = p1->next;
+	p1->next = p2;
+	p1 = p2;
+	n += 1;
+}
 
 									//进入管理系统（数据从文件进入链表)
 struct Movie * entersys (void)
@@ -580,11 +715,40 @@ struct Movie * entersys (void)
 	fclose(fp);
 }
 									//退出管理系统（数据从链表录入 文件）
-void exitsys(struct Movie * head )
+void exitsys(struct Movie * head)
 {
 	FILE *fp;
 	fp = fopen("movie.txt", "w");
-
+	struct Movie * p;
+	p = head;
+	char t_num[11];
+	char t_age[5];
+	char t_hot[4];
+	while (p != NULL)
+	{
+		ltoa(p->num, t_num, 10);
+		itoa(p->age, t_age, 10);
+		itoa(p->hot, t_hot, 10);
+		fputs(t_num, fp);
+		fputs(" ", fp);
+		fputs(t_age, fp);
+		fputs(" ", fp);
+		fputs(p->dir_nam, fp);
+		fputs(" ", fp);
+		fputs(p->lead_actor_name, fp);
+		fputs(" ", fp);
+		fputs(t_hot, fp);
+		fputs(" ", fp);
+		fputs(p->country, fp);
+		fputs(" ", fp);
+		fputs(p->type, fp);
+		fputs(" ", fp);
+		fputs(p->film_name, fp);
+		fputs("\n", fp);
+		fputs(" ", fp);
+		p = p->next;
+	}
+	fclose(fp);
 }
 
 									//登陆模块
@@ -614,7 +778,6 @@ void regis(void)
 	getchar();
 	user_infor_write(tep);
 }
-
 				//用户文件
  int user_infor_read_cmp(struct user tep)
 {
@@ -623,7 +786,7 @@ void regis(void)
 	 char b[21];
 	 char s;
 	 int i = 0, n, j;
-	 fopen_s(&fp, "d:\\user.txt", "r");
+	 fp=fopen( "user.txt", "r");
 	 while (1)
 	 {
 		fgets(a, 11, fp);
@@ -645,11 +808,13 @@ void regis(void)
 			if (!strcmp(tep.pas, b))
 				if (b[0] == '0')
 				{
+					now_user = tep;
 					fclose(fp);		
 					return 0;
 				}
 				else
 				{
+					now_user = tep;
 					fclose(fp);
 					return 1;
 				}
@@ -694,4 +859,5 @@ void regis(void)
 	 fputs("\n", fp);
 	 fclose(fp);
 	 nm += 1;
+	 now_user = tep;
  }
