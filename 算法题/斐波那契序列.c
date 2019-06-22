@@ -2,7 +2,7 @@
 #include <string.h>
 int nums[30];
 int length;
-int count=0;
+int current=0;
 
 int len(int n)
 {
@@ -36,14 +36,14 @@ int fib(char str[],int start)
 			n3=atoi(s3);
 			if(n3==sum)
 			{
-				nums[count]=n1;
-				nums[count+1]=n2;
-				nums[count+2]=n3;
-				count++;
+				nums[current]=n1;
+				nums[current+1]=n2;
+				nums[current+2]=n3;
+				current++;
 				if(j+t+1==length||fib(str,i+1))
 					return 1;
 				else
-					count--;	
+					current--;	
 				break;
 			}			
 		}
@@ -58,7 +58,7 @@ int main()
 	gets(str);
 	length=strlen(str);
 	if(fib(str,0))
-		for(i=0;i<count+2;i++)
+		for(i=0;i<current+2;i++)
 			printf("%d\t",nums[i]);
 	else
 		printf("");
